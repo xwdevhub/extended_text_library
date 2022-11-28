@@ -7,6 +7,7 @@ export 'src/extended_text_utils.dart';
 export 'src/extended_widget_span.dart';
 export 'src/extension.dart';
 export 'src/image_span.dart';
+export 'src/render_object/extended_editable_text_state_render_object.dart';
 export 'src/render_object/extended_text_render_box.dart';
 export 'src/render_object/extended_text_selection_render_object.dart';
 export 'src/selection/extended_text_selection.dart';

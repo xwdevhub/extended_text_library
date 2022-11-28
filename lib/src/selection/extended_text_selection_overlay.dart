@@ -128,7 +128,9 @@ class ExtendedTextSelectionOverlay {
   bool _handlesVisible = false;
   set handlesVisible(bool visible) {
     assert(visible != null);
-    if (_handlesVisible == visible) return;
+    if (_handlesVisible == visible) {
+      return;
+    }
     _handlesVisible = visible;
     _updateTextSelectionOverlayVisibilities();
   }
@@ -158,7 +160,9 @@ class ExtendedTextSelectionOverlay {
   /// that if you do call this during a build, the UI will not update until the
   /// next frame (i.e. many milliseconds later).
   void update(TextEditingValue newValue) {
-    if (_value == newValue) return;
+    if (_value == newValue) {
+      return;
+    }
     _value = newValue;
     _updateSelectionOverlay();
   }
@@ -284,13 +288,32 @@ class ExtendedTextSelectionOverlay {
       return;
     }
 
-    final TextSelection newSelection = TextSelection(
-      baseOffset: _selection.baseOffset,
-      extentOffset: position.offset,
-    );
-
-    if (newSelection.baseOffset >= newSelection.extentOffset)
-      return; // don't allow order swapping.
+    final TextSelection newSelection;
+    switch (defaultTargetPlatform) {
+      // On Apple platforms, dragging the base handle makes it the extent.
+      case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
+        newSelection = TextSelection(
+          extentOffset: position.offset,
+          baseOffset: _selection.start,
+        );
+        if (position.offset <= _selection.start) {
+          return; // Don't allow order swapping.
+        }
+        break;
+      case TargetPlatform.android:
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.linux:
+      case TargetPlatform.windows:
+        newSelection = TextSelection(
+          baseOffset: _selection.baseOffset,
+          extentOffset: position.offset,
+        );
+        if (newSelection.baseOffset >= newSelection.extentOffset) {
+          return; // Don't allow order swapping.
+        }
+        break;
+    }
 
     _handleSelectionHandleChanged(newSelection, isEnd: true);
   }
@@ -322,13 +345,32 @@ class ExtendedTextSelectionOverlay {
       return;
     }
 
-    final TextSelection newSelection = TextSelection(
-      baseOffset: position.offset,
-      extentOffset: _selection.extentOffset,
-    );
-
-    if (newSelection.baseOffset >= newSelection.extentOffset)
-      return; // don't allow order swapping.
+    final TextSelection newSelection;
+    switch (defaultTargetPlatform) {
+      // On Apple platforms, dragging the base handle makes it the extent.
+      case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
+        newSelection = TextSelection(
+          extentOffset: position.offset,
+          baseOffset: _selection.end,
+        );
+        if (newSelection.extentOffset >= _selection.end) {
+          return; // Don't allow order swapping.
+        }
+        break;
+      case TargetPlatform.android:
+      case TargetPlatform.fuchsia:
+      case TargetPlatform.linux:
+      case TargetPlatform.windows:
+        newSelection = TextSelection(
+          baseOffset: position.offset,
+          extentOffset: _selection.extentOffset,
+        );
+        if (newSelection.baseOffset >= newSelection.extentOffset) {
+          return; // Don't allow order swapping.
+        }
+        break;
+    }
 
     _handleSelectionHandleChanged(newSelection, isEnd: false);
   }
@@ -349,7 +391,9 @@ class ExtendedTextSelectionOverlay {
     TextSelectionHandleType ltrType,
     TextSelectionHandleType rtlType,
   ) {
-    if (_selection.isCollapsed) return TextSelectionHandleType.collapsed;
+    if (_selection.isCollapsed) {
+      return TextSelectionHandleType.collapsed;
+    }
 
     assert(textDirection != null);
     switch (textDirection) {
@@ -509,9 +553,9 @@ class SelectionOverlay {
   final ValueListenable<bool>? toolbarVisible;
 
   /// The text selection positions of selection start and end.
-  List<TextSelectionPoint>? get selectionEndPoints => _selectionEndPoints;
-  List<TextSelectionPoint>? _selectionEndPoints;
-  set selectionEndPoints(List<TextSelectionPoint>? value) {
+  List<TextSelectionPoint> get selectionEndPoints => _selectionEndPoints;
+  List<TextSelectionPoint> _selectionEndPoints;
+  set selectionEndPoints(List<TextSelectionPoint> value) {
     if (!listEquals(_selectionEndPoints, value)) {
       _markNeedsBuild();
     }
@@ -758,8 +802,7 @@ class SelectionOverlay {
   }
 
   Widget _buildToolbar(BuildContext context) {
-    if (selectionControls == null || selectionEndPoints == null)
-      return Container();
+    if (selectionControls == null) return Container();
 
     final RenderBox renderBox = this.context.findRenderObject()! as RenderBox;
 
@@ -1015,12 +1058,29 @@ class _SelectionHandleOverlayState extends State<_SelectionHandleOverlay>
           alignment: Alignment.topLeft,
           width: interactiveRect.width,
           height: interactiveRect.height,
-          child: GestureDetector(
+          child: RawGestureDetector(
             behavior: HitTestBehavior.translucent,
-            dragStartBehavior: widget.dragStartBehavior,
-            onPanStart: widget.onSelectionHandleDragStart,
-            onPanUpdate: widget.onSelectionHandleDragUpdate,
-            onPanEnd: widget.onSelectionHandleDragEnd,
+            gestures: <Type, GestureRecognizerFactory>{
+              PanGestureRecognizer:
+                  GestureRecognizerFactoryWithHandlers<PanGestureRecognizer>(
+                () => PanGestureRecognizer(
+                  debugOwner: this,
+                  // Mouse events select the text and do not drag the cursor.
+                  supportedDevices: <PointerDeviceKind>{
+                    PointerDeviceKind.touch,
+                    PointerDeviceKind.stylus,
+                    PointerDeviceKind.unknown,
+                  },
+                ),
+                (PanGestureRecognizer instance) {
+                  instance
+                    ..dragStartBehavior = widget.dragStartBehavior
+                    ..onStart = widget.onSelectionHandleDragStart
+                    ..onUpdate = widget.onSelectionHandleDragUpdate
+                    ..onEnd = widget.onSelectionHandleDragEnd;
+                },
+              ),
+            },
             child: Padding(
               padding: EdgeInsets.only(
                 left: padding.left,

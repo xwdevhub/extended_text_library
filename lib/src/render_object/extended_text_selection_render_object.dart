@@ -30,9 +30,11 @@ abstract class ExtendedTextSelectionRenderObject extends ExtendedTextRenderBox
     implements TextLayoutMetrics {
   ValueListenable<bool> get selectionStartInViewport;
   ValueListenable<bool> get selectionEndInViewport;
-  List<TextSelectionPoint>? getEndpointsForSelection(TextSelection selection);
+  List<TextSelectionPoint> getEndpointsForSelection(TextSelection selection);
 
   TextSelection? selection;
+  int? maxLines;
+  ViewportOffset get offset;
 
   double get preferredLineHeight;
   TextPosition getPositionForPoint(Offset globalPosition);

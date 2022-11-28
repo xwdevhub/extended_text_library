@@ -114,6 +114,34 @@ TextPosition? convertTextPainterPostionToTextInputPostion(
   return textPosition;
 }
 
+TextPosition convertTextInputPostionToTextPainterPostion2(
+    InlineSpan text, TextPosition textPosition) {
+  int caretOffset = textPosition.offset;
+  int textOffset = 0;
+  text.visitChildren((InlineSpan ts) {
+    if (ts is SpecialInlineSpanBase) {
+      final int length = (ts as SpecialInlineSpanBase).actualText.length;
+      if ((textPosition.offset - (length - getInlineOffset(ts))) >=
+          textOffset) {
+        caretOffset -= length - getInlineOffset(ts);
+      }
+      textOffset += length;
+    } else {
+      textOffset += getInlineOffset(ts);
+    }
+    if (textOffset >= textPosition.offset) {
+      return false;
+    }
+    return true;
+  });
+  if (caretOffset != textPosition.offset) {
+    return TextPosition(
+        offset: max(0, caretOffset), affinity: textPosition.affinity);
+  }
+
+  return textPosition;
+}
+
 TextSelection convertTextPainterSelectionToTextInputSelection(
     InlineSpan text, TextSelection selection,
     {bool selectWord = false}) {
