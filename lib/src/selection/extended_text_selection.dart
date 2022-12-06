@@ -479,7 +479,11 @@ class ExtendedTextSelectionGestureDetectorBuilder {
         if (!renderEditable.hasFocus) {
           renderEditable.selectPosition(cause: SelectionChangedCause.tap);
         }
-        toggleToolbar?.call();
+        if (shouldShowSelectionToolbar) {
+          hideToolbar();
+          showToolbar();
+        }
+        // toggleToolbar?.call();
         break;
     }
   }
