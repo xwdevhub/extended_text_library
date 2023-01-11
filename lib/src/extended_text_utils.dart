@@ -289,32 +289,32 @@ TextEditingValue handleSpecialTextSpanDelete(
     // }
 
     int caretOffset = value.selection.extentOffset;
-    if (difStart > 0) {
-      oldTextSpan.visitChildren((InlineSpan span) {
-        if (span is SpecialInlineSpanBase &&
-            (span as SpecialInlineSpanBase).deleteAll) {
-          final SpecialInlineSpanBase specialTs = span as SpecialInlineSpanBase;
-          if (difStart > specialTs.start && difStart < specialTs.end) {
-            //difStart = ts.start;
-            newText = newText.replaceRange(specialTs.start, difStart, '');
-            caretOffset -= difStart - specialTs.start;
-            return false;
-          }
+    oldTextSpan.visitChildren((InlineSpan span) {
+      if (span is SpecialInlineSpanBase &&
+          (span as SpecialInlineSpanBase).deleteAll) {
+        final SpecialInlineSpanBase specialTs = span as SpecialInlineSpanBase;
+        if (difStart >= specialTs.start && difStart < specialTs.end) {
+          //difStart = ts.start;
+          newText = newText.replaceRange(specialTs.start, specialTs.end-1, '');
+          //todo  这里可能还有问题
+          caretOffset -= difStart - specialTs.start;
+          return false;
         }
-        return true;
-      });
-
-      if (newText != value.text) {
-        value = TextEditingValue(
-            text: newText,
-            selection: value.selection.copyWith(
-                baseOffset: caretOffset,
-                extentOffset: caretOffset,
-                affinity: value.selection.affinity,
-                isDirectional: value.selection.isDirectional));
-        textInputConnection?.setEditingState(value);
       }
+      return true;
+    });
+
+    if (newText != value.text) {
+      value = TextEditingValue(
+          text: newText,
+          selection: value.selection.copyWith(
+              baseOffset: caretOffset,
+              extentOffset: caretOffset,
+              affinity: value.selection.affinity,
+              isDirectional: value.selection.isDirectional));
+      textInputConnection?.setEditingState(value);
     }
+
   }
 
   return value;
