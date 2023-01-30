@@ -1,4 +1,5 @@
 import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -295,8 +296,14 @@ TextEditingValue handleSpecialTextSpanDelete(
         final SpecialInlineSpanBase specialTs = span as SpecialInlineSpanBase;
         if (difStart >= specialTs.start && difStart < specialTs.end) {
           //difStart = ts.start;
-          newText = newText.replaceRange(specialTs.start, specialTs.end-1, '');
-          //todo  这里可能还有问题
+          // newText = newText.replaceRange(specialTs.start, specialTs.end-1, '');
+          newText = newText.replaceAll(
+              specialTs.actualText
+                  .substring(0, specialTs.actualText.length - 1),
+              '');
+          newText = newText.replaceAll(
+              specialTs.actualText.substring(1, specialTs.actualText.length),
+              '');
           caretOffset -= difStart - specialTs.start;
           return false;
         }
