@@ -278,6 +278,9 @@ TextEditingValue handleSpecialTextSpanDelete(
     TextInputConnection? textInputConnection) {
   final String? oldText = oldValue?.text;
   String newText = value.text;
+  final bool isDel =
+      (value.selection.baseOffset == oldValue!.selection.baseOffset) &&
+          (oldValue.selection.extentOffset == oldValue.selection.baseOffset);
 
   ///take care of image span
   if (oldText != null && oldText.length > newText.length) {
@@ -290,27 +293,39 @@ TextEditingValue handleSpecialTextSpanDelete(
     // }
 
     int caretOffset = value.selection.extentOffset;
-    oldTextSpan.visitChildren((InlineSpan span) {
-      if (span is SpecialInlineSpanBase &&
-          (span as SpecialInlineSpanBase).deleteAll) {
-        final SpecialInlineSpanBase specialTs = span as SpecialInlineSpanBase;
-        if (difStart >= specialTs.start && difStart < specialTs.end) {
-          //difStart = ts.start;
-          // newText = newText.replaceRange(specialTs.start, specialTs.end-1, '');
-          newText = newText.replaceAll(
-              specialTs.actualText
-                  .substring(0, specialTs.actualText.length - 1),
-              '');
-          newText = newText.replaceAll(
-              specialTs.actualText.substring(1, specialTs.actualText.length),
-              '');
-          caretOffset -= difStart - specialTs.start;
-          return false;
-        }
+    if (!isDel) {
+      if (difStart > 0) {
+        oldTextSpan.visitChildren((InlineSpan span) {
+          if (span is SpecialInlineSpanBase &&
+              (span as SpecialInlineSpanBase).deleteAll) {
+            final SpecialInlineSpanBase specialTs =
+                span as SpecialInlineSpanBase;
+            if (difStart > specialTs.start && difStart < specialTs.end) {
+              //difStart = ts.start;
+              newText = newText.replaceRange(specialTs.start, difStart, '');
+              caretOffset -= difStart - specialTs.start;
+              return false;
+            }
+          }
+          return true;
+        });
       }
-      return true;
-    });
-
+    } else {
+      oldTextSpan.visitChildren((InlineSpan span) {
+        if (span is SpecialInlineSpanBase &&
+            (span as SpecialInlineSpanBase).deleteAll) {
+          final SpecialInlineSpanBase specialTs = span as SpecialInlineSpanBase;
+          if (difStart >= specialTs.start && difStart < specialTs.end) {
+            //difStart = ts.start;
+            newText =
+                newText.replaceRange(specialTs.start, specialTs.end - 1, '');
+            caretOffset -= difStart - specialTs.start;
+            return false;
+          }
+        }
+        return true;
+      });
+    }
     if (newText != value.text) {
       value = TextEditingValue(
           text: newText,
@@ -321,7 +336,6 @@ TextEditingValue handleSpecialTextSpanDelete(
               isDirectional: value.selection.isDirectional));
       textInputConnection?.setEditingState(value);
     }
-
   }
 
   return value;
