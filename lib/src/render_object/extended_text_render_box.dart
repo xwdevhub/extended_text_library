@@ -472,7 +472,7 @@ abstract class ExtendedTextRenderBox extends RenderBox
       List<TextBox> boxs = textPainter.getBoxesForSelection(
         TextSelection(
             baseOffset: offset,
-            extentOffset: offset + 1,
+            extentOffset: textPosition.affinity==TextAffinity.upstream?offset:(offset + 1),
             affinity: textPosition.affinity),
         boxWidthStyle: selectionWidthStyle,
         boxHeightStyle: selectionHeightStyle,
