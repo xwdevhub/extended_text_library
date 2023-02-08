@@ -263,9 +263,15 @@ class ExtendedTextSelectionGestureDetectorBuilder {
         break;
     }
     int tempStamp = DateTime.now().millisecondsSinceEpoch;
-    if (tempStamp > tapTimeStamp && (tempStamp - tapTimeStamp) <= 250) {
-      //这是一次三击事件
-      renderEditable.selectAll(cause: SelectionChangedCause.tap);
+    if (tempStamp > tapTimeStamp && (tempStamp - tapTimeStamp) <= 300) {
+      editableText.userUpdateTextEditingValue(
+        editableText.textEditingValue.copyWith(
+          selection: TextSelection(
+              baseOffset: 0,
+              extentOffset: editableText.textEditingValue.text.length),
+        ),
+        SelectionChangedCause.tap,
+      );
     }
   }
 

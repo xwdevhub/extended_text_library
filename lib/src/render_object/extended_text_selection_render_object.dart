@@ -161,15 +161,7 @@ abstract class ExtendedTextSelectionRenderObject extends ExtendedTextRenderBox
     );
   }
 
-  void selectAll({required SelectionChangedCause cause}) {
-    setSelection(
-      TextSelection(
-        baseOffset: 0,
-        extentOffset: text?.toString().length ?? 0,
-      ),
-      cause,
-    );
-  }
+ 
 
   void selectWordEdge({required SelectionChangedCause cause}) {
     assert(cause != null);
