@@ -295,20 +295,21 @@ TextEditingValue handleSpecialTextSpanDelete(
     int caretOffset = value.selection.extentOffset;
     if (!isDel) {
       if (difStart > 0) {
-        oldTextSpan.visitChildren((InlineSpan span) {
-          if (span is SpecialInlineSpanBase &&
-              (span as SpecialInlineSpanBase).deleteAll) {
-            final SpecialInlineSpanBase specialTs =
-                span as SpecialInlineSpanBase;
-            if (difStart > specialTs.start && difStart < specialTs.end) {
-              //difStart = ts.start;
-              newText = newText.replaceRange(specialTs.start, difStart, '');
-              caretOffset -= difStart - specialTs.start;
-              return false;
+        if (oldValue.selection.start == oldValue.selection.end)
+          oldTextSpan.visitChildren((InlineSpan span) {
+            if (span is SpecialInlineSpanBase &&
+                (span as SpecialInlineSpanBase).deleteAll) {
+              final SpecialInlineSpanBase specialTs =
+                  span as SpecialInlineSpanBase;
+              if (difStart > specialTs.start && difStart < specialTs.end) {
+                //difStart = ts.start;
+                newText = newText.replaceRange(specialTs.start, difStart, '');
+                caretOffset -= difStart - specialTs.start;
+                return false;
+              }
             }
-          }
-          return true;
-        });
+            return true;
+          });
       }
     } else {
       oldTextSpan.visitChildren((InlineSpan span) {
