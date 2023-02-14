@@ -68,6 +68,7 @@ class ExtendedTextSelectionGestureDetectorBuilder {
   /// the correct gesture handlers to the gesture detector.
   @protected
   final ExtendedTextSelectionGestureDetectorBuilderDelegate delegate;
+  int tapTimeStamp = 0;
 
   /// Returns true if lastSecondaryTapDownPosition was on selection.
   bool get _lastSecondaryTapWasOnSelection {
@@ -260,6 +261,17 @@ class ExtendedTextSelectionGestureDetectorBuilder {
         }
         renderEditable.selectPosition(cause: SelectionChangedCause.tap);
         break;
+    }
+    int tempStamp = DateTime.now().millisecondsSinceEpoch;
+    if (tempStamp > tapTimeStamp && (tempStamp - tapTimeStamp) <= 300) {
+      editableText.userUpdateTextEditingValue(
+        editableText.textEditingValue.copyWith(
+          selection: TextSelection(
+              baseOffset: 0,
+              extentOffset: editableText.textEditingValue.text.length),
+        ),
+        SelectionChangedCause.tap,
+      );
     }
   }
 
@@ -512,6 +524,7 @@ class ExtendedTextSelectionGestureDetectorBuilder {
   ///    callback.
   @protected
   void onDoubleTapDown(TapDownDetails details) {
+    tapTimeStamp = DateTime.now().millisecondsSinceEpoch;
     if (delegate.selectionEnabled) {
       renderEditable.selectWord(cause: SelectionChangedCause.tap);
       if (shouldShowSelectionToolbar) {

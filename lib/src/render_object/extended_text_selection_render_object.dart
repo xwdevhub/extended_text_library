@@ -161,6 +161,8 @@ abstract class ExtendedTextSelectionRenderObject extends ExtendedTextRenderBox
     );
   }
 
+ 
+
   void selectWordEdge({required SelectionChangedCause cause}) {
     assert(cause != null);
     _computeTextMetricsIfNeeded();
