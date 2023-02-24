@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -295,7 +296,8 @@ TextEditingValue handleSpecialTextSpanDelete(
     int caretOffset = value.selection.extentOffset;
     if (!isDel) {
       if (difStart > 0) {
-        if (oldValue.selection.start == oldValue.selection.end)
+        if (oldValue.selection.start == oldValue.selection.end ||
+            Platform.isIOS)
           oldTextSpan.visitChildren((InlineSpan span) {
             if (span is SpecialInlineSpanBase &&
                 (span as SpecialInlineSpanBase).deleteAll) {
