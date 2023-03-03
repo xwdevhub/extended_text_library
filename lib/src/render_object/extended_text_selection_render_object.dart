@@ -1,5 +1,6 @@
 // ignore_for_file: unnecessary_null_comparison, always_put_control_body_on_new_line
 
+import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -161,8 +162,6 @@ abstract class ExtendedTextSelectionRenderObject extends ExtendedTextRenderBox
     );
   }
 
- 
-
   void selectWordEdge({required SelectionChangedCause cause}) {
     assert(cause != null);
     _computeTextMetricsIfNeeded();
@@ -172,7 +171,11 @@ abstract class ExtendedTextSelectionRenderObject extends ExtendedTextRenderBox
     final TextRange word = textPainter.getWordBoundary(position);
     late TextSelection newSelection;
     if (position.offset - word.start <= 1) {
-      newSelection = TextSelection.collapsed(offset: word.start);
+      int offset = word.start;
+      if (Platform.isIOS) {
+        offset = position.offset;
+      }
+      newSelection = TextSelection.collapsed(offset: offset);
     } else {
       newSelection = TextSelection.collapsed(
           offset: word.end, affinity: TextAffinity.upstream);
