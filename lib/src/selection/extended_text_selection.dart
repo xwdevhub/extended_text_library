@@ -618,7 +618,14 @@ class ExtendedTextSelectionGestureDetectorBuilder {
   @protected
   void onDoubleTapDown(TapDownDetails details) {
     if (delegate.selectionEnabled) {
-      renderEditable.selectWord(cause: SelectionChangedCause.tap);
+      editableText.userUpdateTextEditingValue(
+        editableText.textEditingValue.copyWith(
+          selection: TextSelection(
+              baseOffset: 0,
+              extentOffset: editableText.textEditingValue.text.length),
+        ),
+        SelectionChangedCause.tap,
+      );
       if (shouldShowSelectionToolbar) {
         editableText.showToolbar();
       }
