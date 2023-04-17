@@ -14,19 +14,6 @@ import 'package:flutter/widgets.dart';
 ///
 ///  create by zmtzawqlp on 2019/8/1
 ///
-///
-/// Signature for the callback that reports when the user changes the selection
-/// (including the cursor location).
-///
-/// Used by [ExtendedRenderEditable.onSelectionChanged].
-typedef TextSelectionChangedHandler = void Function(
-    TextSelection selection, SelectionChangedCause cause);
-
-/// [ExtendedRenderEditable](https://github.com/fluttercandies/extended_text_field/blob/master/lib/src/extended_render_editable.dart#L104)
-/// [ExtendedRenderParagraph](https://github.com/fluttercandies/extended_text/blob/master/lib/src/extended_render_paragraph.dart#L13)
-///
-/// TextSelection for them
-/// flutter/packages/flutter/lib/src/rendering/editable.dart
 abstract class ExtendedTextSelectionRenderObject extends ExtendedTextRenderBox
     implements TextLayoutMetrics {
   ValueListenable<bool> get selectionStartInViewport;

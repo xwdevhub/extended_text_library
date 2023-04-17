@@ -10,4 +10,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  extended_text_field:
+    git: https://github.com/xwdevhub/extended_text_field.git
 
