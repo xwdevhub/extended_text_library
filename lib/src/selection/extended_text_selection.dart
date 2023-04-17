@@ -789,3 +789,52 @@ class ExtendedTextSelectionGestureDetectorBuilder {
     );
   }
 }
+
+
+class CommonTextSelectionGestureDetectorBuilder extends ExtendedTextSelectionGestureDetectorBuilder {
+  CommonTextSelectionGestureDetectorBuilder({
+    required ExtendedTextFieldState state,
+  }) : _state = state,
+        super(delegate: state);
+
+  final ExtendedTextFieldState _state;
+
+  @override
+  void onForcePressStart(ForcePressDetails details) {
+    super.onForcePressStart(details);
+    if (delegate.selectionEnabled && shouldShowSelectionToolbar) {
+      editableText.showToolbar();
+    }
+  }
+
+  @override
+  void onForcePressEnd(ForcePressDetails details) {
+    // Not required.
+  }
+
+  @override
+  void onSingleTapUp(TapUpDetails details) {
+    super.onSingleTapUp(details);
+    _state.requestKeyboard();
+    _state.widget.onTap?.call();
+  }
+
+  @override
+  void onSingleLongTapStart(LongPressStartDetails details) {
+    super.onSingleLongTapStart(details);
+    if (delegate.selectionEnabled) {
+      switch (Theme.of(_state.context).platform) {
+        case TargetPlatform.iOS:
+        case TargetPlatform.macOS:
+          break;
+        case TargetPlatform.android:
+        case TargetPlatform.fuchsia:
+        case TargetPlatform.linux:
+        case TargetPlatform.windows:
+          Feedback.forLongPress(_state.context);
+          break;
+      }
+    }
+  }
+}
+

@@ -22,7 +22,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: ef937c5de63d84e46d76ab1b44ddb42b66a2eb10
+      resolved-ref: "6af13b0c12ac1fed65212a49a326d94f9a278f8f"
       url: "https://github.com/xwdevhub/extended_text_field.git"
     source: git
     version: "10.2.0"
