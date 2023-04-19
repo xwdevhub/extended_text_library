@@ -630,14 +630,7 @@ class ExtendedTextSelectionGestureDetectorBuilder {
   void onDoubleTapDown(TapDownDetails details) {
     tapTimeStamp = DateTime.now().millisecondsSinceEpoch;
     if (delegate.selectionEnabled) {
-      editableText.userUpdateTextEditingValue(
-        editableText.textEditingValue.copyWith(
-          selection: TextSelection(
-              baseOffset: 0,
-              extentOffset: editableText.textEditingValue.text.length),
-        ),
-        SelectionChangedCause.tap,
-      );
+      renderEditable.selectWord(cause: SelectionChangedCause.tap);
       if (shouldShowSelectionToolbar) {
         editableText.showToolbar();
       }
