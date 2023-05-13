@@ -248,10 +248,45 @@ class ExtendedTextSelectionOverlay {
       )
       ..lineHeightAtEnd = _getEndGlyphHeight()
       // Update selection toolbar metrics.
-      ..selectionEndpoints = renderObject.getEndpointsForSelection(_selection)
+      ..selectionEndpoints = renderObject.getEndpointsForSelection(_getTextSelection())
       ..toolbarLocation = renderObject.lastSecondaryTapDownPosition;
   }
 
+  TextSelection _getTextSelection(){
+    TextSelection newSelection = _selection;
+
+    if (defaultTargetPlatform == TargetPlatform.android ||
+        defaultTargetPlatform == TargetPlatform.iOS) {
+      int baseOffset = newSelection.baseOffset;
+      int offset = newSelection.extentOffset;
+      renderObject.text!.visitChildren((InlineSpan ts) {
+        if (ts is SpecialInlineSpanBase) {
+          final SpecialInlineSpanBase specialTs = ts as SpecialInlineSpanBase;
+          int sLength = 0;
+          if (specialTs is SpecialTextSpan &&
+              (defaultTargetPlatform == TargetPlatform.android ||
+                  defaultTargetPlatform == TargetPlatform.iOS)) {
+            sLength = specialTs.text!.length;
+          }
+          if (specialTs.start < baseOffset) {
+            baseOffset -= sLength+1;
+          }
+          if (specialTs.start < offset) {
+            offset -= sLength+1;
+          }
+          if (specialTs.start >= baseOffset && specialTs.start >= offset) {
+            return false;
+          } else {
+            return true;
+          }
+        }
+        return true;
+      });
+      newSelection = newSelection.copyWith(
+          baseOffset: baseOffset, extentOffset: offset);
+    }
+    return newSelection;
+  }
   /// Causes the overlay to update its rendering.
   ///
   /// This is intended to be called when the [renderObject] may have changed its
