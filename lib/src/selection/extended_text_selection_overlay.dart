@@ -284,8 +284,11 @@ class ExtendedTextSelectionOverlay {
         }
         return true;
       });
-      newSelection = newSelection.copyWith(
-          baseOffset: baseOffset, extentOffset: offset);
+      if(baseOffset>0&&offset>0){
+        newSelection = newSelection.copyWith(
+            baseOffset: baseOffset, extentOffset: offset);
+      }
+
     }
     return newSelection;
   }
