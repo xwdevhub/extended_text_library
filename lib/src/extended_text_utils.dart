@@ -296,7 +296,7 @@ TextEditingValue handleSpecialTextSpanDelete(
     int caretOffset = value.selection.extentOffset;
     if (!isDel) {
       if (difStart > 0) {
-        if (oldValue.selection.start == oldValue.selection.end ||
+        if (oldValue.selection.start == oldValue.selection.end ||Platform.isAndroid||
             Platform.isIOS)
           oldTextSpan.visitChildren((InlineSpan span) {
             if (span is SpecialInlineSpanBase &&

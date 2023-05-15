@@ -266,13 +266,13 @@ class ExtendedTextSelectionOverlay {
           if (specialTs is SpecialTextSpan &&
               (defaultTargetPlatform == TargetPlatform.android ||
                   defaultTargetPlatform == TargetPlatform.iOS)) {
-            sLength = specialTs.text!.length;
+            sLength = specialTs.actualText.length - specialTs.text!.length;
           }
           if (specialTs.start < baseOffset) {
-            baseOffset -= sLength+1;
+            baseOffset -= sLength;
           }
           if (specialTs.start < offset) {
-            offset -= sLength+1;
+            offset -= sLength;
           }
           if (specialTs.start >= baseOffset && specialTs.start >= offset) {
             return false;
