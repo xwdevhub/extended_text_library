@@ -569,7 +569,8 @@ class ExtendedTextSelectionOverlay {
 
     if (_selection.isCollapsed) {
       _selectionOverlay.updateMagnifier(_buildMagnifier(
-        currentTextPosition: position,
+        currentTextPosition: convertTextInputPostionToTextPainterPostion(
+            renderObject.text!, position)!,
         globalGesturePosition: details.globalPosition,
         renderEditable: renderObject,
       ));
