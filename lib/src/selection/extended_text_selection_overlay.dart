@@ -269,6 +269,10 @@ class ExtendedTextSelectionOverlay {
               (defaultTargetPlatform == TargetPlatform.android ||
                   defaultTargetPlatform == TargetPlatform.iOS)) {
             sLength = specialTs.actualText.length - specialTs.text!.length;
+          }else if(specialTs is ImageSpan &&
+              (defaultTargetPlatform == TargetPlatform.android ||
+                  defaultTargetPlatform == TargetPlatform.iOS)){
+            sLength = specialTs.actualText.length - 1;
           }
           if (specialTs.start < oldBaseOffset) {
             baseOffset -= sLength;
