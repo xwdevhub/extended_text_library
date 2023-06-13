@@ -589,6 +589,8 @@ class ExtendedTextSelectionGestureDetectorBuilder {
         }
         if (shouldShowSelectionToolbar) {
           editableText.hideToolbar();
+          /// macos处理(会话列表切换，右键粘贴不能使用)
+          editableText.updateOverlay();
           editableText.showToolbar();
         }
         break;

@@ -22,7 +22,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "6af13b0c12ac1fed65212a49a326d94f9a278f8f"
+      resolved-ref: a97a79b822af9b715d98638aed6b24ca887b456e
       url: "https://github.com/xwdevhub/extended_text_field.git"
     source: git
     version: "10.2.0"
@@ -52,6 +52,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.5"
+  logger:
+    dependency: transitive
+    description:
+      name: logger
+      sha256: "7ad7215c15420a102ec687bb320a7312afd449bac63bfb1c60d9787c27b9767f"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.4.0"
   material_color_utilities:
     dependency: transitive
     description:
