@@ -4,7 +4,7 @@ import 'package:flutter/rendering.dart';
 ///  create by zmtzawqlp on 2019/7/10
 ///
 
-abstract class SpecialInlineSpanBase {
+mixin SpecialInlineSpanBase {
   /// actual text
   String get actualText;
 
@@ -28,7 +28,7 @@ abstract class SpecialInlineSpanBase {
         other.actualText == actualText;
   }
 
-  int get baseHashCode => hashValues(actualText, start, deleteAll);
+  int get baseHashCode => Object.hash(actualText, start, deleteAll);
 
   RenderComparison baseCompareTo(SpecialInlineSpanBase other) {
     if (other.actualText != actualText) {
@@ -40,5 +40,13 @@ abstract class SpecialInlineSpanBase {
     }
 
     return RenderComparison.identical;
+  }
+
+  /// showText is the text on screen
+  String getSelectedContent(String showText) {
+    if (deleteAll) {
+      return actualText;
+    }
+    return showText;
   }
 }
