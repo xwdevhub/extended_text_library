@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
 
@@ -344,7 +345,11 @@ class ExtendedTextLibraryUtils {
           final SpecialInlineSpanBase specialTs = span as SpecialInlineSpanBase;
           if (caretOffset >= specialTs.start && caretOffset <= specialTs.end) {
             if (movePrevious != null) {
-              if (movePrevious) {
+              if (movePrevious && caretOffset == specialTs.end) {
+                caretOffset = specialTs.end;
+              } else if (movePrevious && caretOffset < specialTs.end) {
+                caretOffset = specialTs.start;
+              } else if (!movePrevious && caretOffset == specialTs.start) {
                 caretOffset = specialTs.start;
               } else {
                 caretOffset = specialTs.end;
@@ -383,6 +388,9 @@ class ExtendedTextLibraryUtils {
       TextInputConnection? textInputConnection) {
     final String? oldText = oldValue?.text;
     String newText = value.text;
+    final bool isDel =
+        (value.selection.baseOffset == oldValue!.selection.baseOffset) &&
+            (oldValue.selection.extentOffset == oldValue.selection.baseOffset);
 
     ///take care of image span
     if (oldText != null && oldText.length > newText.length) {
@@ -395,37 +403,108 @@ class ExtendedTextLibraryUtils {
       // }
 
       int caretOffset = value.selection.extentOffset;
-      if (difStart > 0) {
+      if (!isDel) {
+        if (difStart > 0) {
+          if (oldValue.selection.start == oldValue.selection.end ||
+              Platform.isAndroid ||
+              Platform.isIOS)
+            oldTextSpan.visitChildren((InlineSpan span) {
+              if (span is SpecialInlineSpanBase &&
+                  (span as SpecialInlineSpanBase).deleteAll) {
+                final SpecialInlineSpanBase specialTs =
+                    span as SpecialInlineSpanBase;
+                if (difStart >= specialTs.start && difStart < specialTs.end) {
+                  //difStart = ts.start;
+                  newText = newText.replaceRange(specialTs.start, difStart, '');
+                  caretOffset -= difStart - specialTs.start;
+                  return false;
+                }
+              }
+              return true;
+            });
+        }
+      } else {
         oldTextSpan.visitChildren((InlineSpan span) {
           if (span is SpecialInlineSpanBase &&
               (span as SpecialInlineSpanBase).deleteAll) {
             final SpecialInlineSpanBase specialTs =
                 span as SpecialInlineSpanBase;
-            if (difStart > specialTs.start && difStart < specialTs.end) {
+            if (difStart >= specialTs.start && difStart < specialTs.end) {
               //difStart = ts.start;
-              newText = newText.replaceRange(specialTs.start, difStart, '');
+              newText =
+                  newText.replaceRange(specialTs.start, specialTs.end - 1, '');
               caretOffset -= difStart - specialTs.start;
               return false;
             }
           }
           return true;
         });
-
-        if (newText != value.text) {
-          value = TextEditingValue(
-              text: newText,
-              selection: value.selection.copyWith(
-                  baseOffset: caretOffset,
-                  extentOffset: caretOffset,
-                  affinity: value.selection.affinity,
-                  isDirectional: value.selection.isDirectional));
-          textInputConnection?.setEditingState(value);
-        }
+      }
+      if (newText != value.text) {
+        value = TextEditingValue(
+            text: newText,
+            selection: value.selection.copyWith(
+                baseOffset: caretOffset,
+                extentOffset: caretOffset,
+                affinity: value.selection.affinity,
+                isDirectional: value.selection.isDirectional));
+        textInputConnection?.setEditingState(value);
       }
     }
 
     return value;
   }
+
+  // static TextEditingValue handleSpecialTextSpanDelete(
+  //     TextEditingValue value,
+  //     TextEditingValue? oldValue,
+  //     InlineSpan oldTextSpan,
+  //     TextInputConnection? textInputConnection) {
+  //   final String? oldText = oldValue?.text;
+  //   String newText = value.text;
+
+  //   ///take care of image span
+  //   if (oldText != null && oldText.length > newText.length) {
+  //     final int difStart = value.selection.extentOffset;
+  //     //int difEnd = oldText.length - 1;
+  //     // for (; difStart < newText.length; difStart++) {
+  //     //   if (oldText[difStart] != newText[difStart]) {
+  //     //     break;
+  //     //   }
+  //     // }
+
+  //     int caretOffset = value.selection.extentOffset;
+  //     if (difStart > 0) {
+  //       oldTextSpan.visitChildren((InlineSpan span) {
+  //         if (span is SpecialInlineSpanBase &&
+  //             (span as SpecialInlineSpanBase).deleteAll) {
+  //           final SpecialInlineSpanBase specialTs =
+  //               span as SpecialInlineSpanBase;
+  //           if (difStart > specialTs.start && difStart < specialTs.end) {
+  //             //difStart = ts.start;
+  //             newText = newText.replaceRange(specialTs.start, difStart, '');
+  //             caretOffset -= difStart - specialTs.start;
+  //             return false;
+  //           }
+  //         }
+  //         return true;
+  //       });
+
+  //       if (newText != value.text) {
+  //         value = TextEditingValue(
+  //             text: newText,
+  //             selection: value.selection.copyWith(
+  //                 baseOffset: caretOffset,
+  //                 extentOffset: caretOffset,
+  //                 affinity: value.selection.affinity,
+  //                 isDirectional: value.selection.isDirectional));
+  //         textInputConnection?.setEditingState(value);
+  //       }
+  //     }
+  //   }
+
+  //   return value;
+  // }
 
 //bool hasSpecialText(List<TextSpan> value) {
 //  if (value == null) return false;
