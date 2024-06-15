@@ -29,6 +29,7 @@ class ImageSpan extends ExtendedWidgetSpan {
     bool gaplessPlayback = false,
     FilterQuality filterQuality = FilterQuality.low,
     GestureTapCallback? onTap,
+    GestureTapUpCallback? onSecondaryTap,
     HitTestBehavior behavior = HitTestBehavior.deferToChild,
     MouseCursor cursor = SystemMouseCursors.text,
   })  : width = imageWidth + (margin == null ? 0 : margin.horizontal),
@@ -39,6 +40,7 @@ class ImageSpan extends ExtendedWidgetSpan {
             child: Container(
               padding: margin,
               child: GestureDetector(
+                onSecondaryTapUp: onSecondaryTap,
                 onTap: onTap,
                 behavior: behavior,
                 child: Image(
