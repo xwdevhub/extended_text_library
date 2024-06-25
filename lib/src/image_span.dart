@@ -5,8 +5,7 @@ import 'package:flutter/material.dart';
 import 'extended_widget_span.dart';
 
 class ImageSpan extends ExtendedWidgetSpan {
-  ImageSpan(
-    ImageProvider image, {
+  ImageSpan(ImageProvider image, {
     Key? key,
     required double imageWidth,
     required double imageHeight,
@@ -29,48 +28,51 @@ class ImageSpan extends ExtendedWidgetSpan {
     bool gaplessPlayback = false,
     FilterQuality filterQuality = FilterQuality.low,
     GestureTapCallback? onTap,
+    GestureTapCallback? onDoubleTap,
     GestureTapUpCallback? onSecondaryTap,
     HitTestBehavior behavior = HitTestBehavior.deferToChild,
     MouseCursor cursor = SystemMouseCursors.text,
-  })  : width = imageWidth + (margin == null ? 0 : margin.horizontal),
+  })
+      : width = imageWidth + (margin == null ? 0 : margin.horizontal),
         height = imageHeight + (margin == null ? 0 : margin.vertical),
         super(
-          child: MouseRegion(
-            cursor: cursor,
-            child: Container(
-              padding: margin,
-              child: GestureDetector(
-                onSecondaryTapUp: onSecondaryTap,
-                onTap: onTap,
-                behavior: behavior,
-                child: Image(
-                  key: key,
-                  image: image,
-                  width: imageWidth,
-                  height: imageHeight,
-                  fit: fit,
-                  loadingBuilder: loadingBuilder,
-                  frameBuilder: frameBuilder,
-                  semanticLabel: semanticLabel,
-                  excludeFromSemantics: excludeFromSemantics,
-                  color: color,
-                  colorBlendMode: colorBlendMode,
-                  alignment: imageAlignment,
-                  repeat: repeat,
-                  centerSlice: centerSlice,
-                  matchTextDirection: matchTextDirection,
-                  gaplessPlayback: gaplessPlayback,
-                  filterQuality: filterQuality,
-                ),
+        child: MouseRegion(
+          cursor: cursor,
+          child: Container(
+            padding: margin,
+            child: GestureDetector(
+              onDoubleTap: onDoubleTap,
+              onSecondaryTapUp: onSecondaryTap,
+              onTap: onTap,
+              behavior: behavior,
+              child: Image(
+                key: key,
+                image: image,
+                width: imageWidth,
+                height: imageHeight,
+                fit: fit,
+                loadingBuilder: loadingBuilder,
+                frameBuilder: frameBuilder,
+                semanticLabel: semanticLabel,
+                excludeFromSemantics: excludeFromSemantics,
+                color: color,
+                colorBlendMode: colorBlendMode,
+                alignment: imageAlignment,
+                repeat: repeat,
+                centerSlice: centerSlice,
+                matchTextDirection: matchTextDirection,
+                gaplessPlayback: gaplessPlayback,
+                filterQuality: filterQuality,
               ),
             ),
           ),
-          baseline: baseline,
-          alignment: alignment,
-          start: start,
-          deleteAll: true,
-          actualText: actualText,
-        );
+        ),
+        baseline: baseline,
+        alignment: alignment,
+        start: start,
+        deleteAll: true,
+        actualText: actualText,
+      );
   final double width;
   final double height;
 }

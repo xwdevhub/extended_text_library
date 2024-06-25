@@ -19,6 +19,7 @@ class FileSpan extends ExtendedWidgetSpan {
     String? actualText,
     TextBaseline? baseline,
     GestureTapCallback? onTap,
+    GestureTapCallback? onDoubleTap,
     GestureTapUpCallback? onSecondaryTap,
     HitTestBehavior behavior = HitTestBehavior.deferToChild,
     MouseCursor cursor = SystemMouseCursors.click,
@@ -31,6 +32,7 @@ class FileSpan extends ExtendedWidgetSpan {
             padding: margin,
             child: GestureDetector(
               onSecondaryTapUp: onSecondaryTap,
+              onDoubleTap: onDoubleTap,
               onTap: onTap,
               behavior: behavior,
               child: Container(
