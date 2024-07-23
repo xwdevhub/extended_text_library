@@ -85,16 +85,15 @@ class ExtendedWidgetSpan extends WidgetSpan with SpecialInlineSpanBase {
   }
 
   @override
-  void build(
-    ui.ParagraphBuilder builder, {
-    double textScaleFactor = 1.0,
+  void build(ui.ParagraphBuilder builder, {
+    TextScaler textScaler = TextScaler.noScaling,
     List<PlaceholderDimensions>? dimensions,
-  }) {
+  })  {
     assert(debugAssertIsValid());
     assert(dimensions != null);
     final bool hasStyle = style != null;
     if (hasStyle) {
-      builder.pushStyle(style!.getTextStyle(textScaleFactor: textScaleFactor));
+      builder.pushStyle(style!.getTextStyle(textScaler: textScaler));
     }
     assert(builder.placeholderCount < dimensions!.length);
     final PlaceholderDimensions currentDimensions =
@@ -104,7 +103,7 @@ class ExtendedWidgetSpan extends WidgetSpan with SpecialInlineSpanBase {
       currentDimensions.size.width,
       currentDimensions.size.height,
       alignment,
-      scale: textScaleFactor,
+      scale: 1.0,
       baseline: currentDimensions.baseline,
       baselineOffset: currentDimensions.baselineOffset,
     );
